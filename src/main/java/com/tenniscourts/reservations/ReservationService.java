@@ -15,9 +15,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
 
     private final ReservationMapper reservationMapper;
-
+/**
+ * bookReservation -  As a User I should able to book a reservation for one or more tennis court at a given date schedule
+ * @param createReservationRequestDTO
+ * @return
+ */
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
-        throw new UnsupportedOperationException();
+    	
+    	 return reservationMapper.map(this.updateReservation(reservationMapper.map(createReservationRequestDTO),  BigDecimal.ZERO, ReservationStatus.READY_TO_PLAY));
+    	 
     }
 
     public ReservationDTO findReservation(Long reservationId) {
@@ -43,7 +49,7 @@ public class ReservationService {
         });
     }
 
-    private Reservation updateReservation(Reservation reservation, BigDecimal refundValue, ReservationStatus status) {
+    public Reservation updateReservation(Reservation reservation, BigDecimal refundValue, ReservationStatus status) {
         reservation.setReservationStatus(status);
         reservation.setValue(reservation.getValue().subtract(refundValue));
         reservation.setRefundValue(refundValue);
@@ -77,7 +83,8 @@ public class ReservationService {
         Reservation previousReservation = cancel(previousReservationId);
 
         if (scheduleId.equals(previousReservation.getSchedule().getId())) {
-            throw new IllegalArgumentException("Cannot reschedule to the same slot.");
+        	return reservationMapper.map(previousReservation);
+           // throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
 
         previousReservation.setReservationStatus(ReservationStatus.RESCHEDULED);
