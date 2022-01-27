@@ -1,12 +1,14 @@
 package com.tenniscourts.reservations;
 
-import com.tenniscourts.exceptions.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+
+import org.springframework.stereotype.Service;
+
+import com.tenniscourts.exceptions.EntityNotFoundException;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +27,7 @@ public class ReservationService {
     	 return reservationMapper.map(this.updateReservation(reservationMapper.map(createReservationRequestDTO),  BigDecimal.ZERO, ReservationStatus.READY_TO_PLAY));
     	 
     }
+    
 
     public ReservationDTO findReservation(Long reservationId) {
         return reservationRepository.findById(reservationId).map(reservationMapper::map).<EntityNotFoundException>orElseThrow(() -> {
@@ -51,7 +54,13 @@ public class ReservationService {
 
     public Reservation updateReservation(Reservation reservation, BigDecimal refundValue, ReservationStatus status) {
         reservation.setReservationStatus(status);
-        reservation.setValue(reservation.getValue().subtract(refundValue));
+        System.out.println(reservation.getValue());
+        if(reservation.getValue()!=null) {
+        reservation.setValue( reservation.getValue()!=BigDecimal.ZERO?reservation.getValue().subtract(refundValue):refundValue);
+        }
+        else {
+        	 reservation.setValue( refundValue);
+        }
         reservation.setRefundValue(refundValue);
 
         return reservationRepository.save(reservation);
@@ -97,4 +106,5 @@ public class ReservationService {
         newReservation.setPreviousReservation(reservationMapper.map(previousReservation));
         return newReservation;
     }
+
 }

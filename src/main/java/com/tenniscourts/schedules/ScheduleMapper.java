@@ -12,4 +12,6 @@ public interface ScheduleMapper {
     ScheduleDTO map(Schedule source);
 
     List<ScheduleDTO> map(List<Schedule> source);
+    
+    Schedule map(CreateScheduleRequestDTO source);
 }
